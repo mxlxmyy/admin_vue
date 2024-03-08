@@ -1,26 +1,3 @@
-<script setup>
-import { RouterView } from 'vue-router'
-import { ref, onMounted } from 'vue'
-
-import MenuList from '@/components/menu/MenuList.vue'
-import HeaderMain from '@/components/top/HeaderMain.vue'
-
-const defaultHeight = ref({     
-  height: "500px"
-})
-
-onMounted(() => {
-  window.addEventListener("resize", getHeight);  
-	getHeight();
-})
-
-//获取页面高度
-function getHeight() {    
-  defaultHeight.value.height = window.innerHeight + "px";  
-}
-
-</script>
-
 <template>
   <el-container class="layout-container-demo" :style="defaultHeight">
     
@@ -45,6 +22,29 @@ function getHeight() {
   </el-container>
 
 </template>
+
+<script setup>
+import { RouterView } from 'vue-router'
+import { ref, onMounted } from 'vue'
+
+import MenuList from './components/MenuList.vue'
+import HeaderMain from './components/HeaderMain.vue'
+
+const defaultHeight = ref({     
+  height: "500px"
+})
+
+onMounted(() => {
+  window.addEventListener("resize", getHeight);  
+	getHeight();
+})
+
+//获取页面高度
+function getHeight() {    
+  defaultHeight.value.height = window.innerHeight + "px";  
+}
+
+</script>
 
 <style scoped>
   .layout-container-demo .el-header {
