@@ -1,5 +1,5 @@
 import { getUrl, postUrl, loadCsrf } from '../index'
-import { failPromise, sucPromise } from '@/libs/error'
+import { failPromise } from '@/libs/error'
 
 //请求地址前缀
 const urlPath = "/api/login/";

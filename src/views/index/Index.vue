@@ -24,11 +24,15 @@
 </template>
 
 <script setup>
-import { RouterView } from 'vue-router'
+import { RouterView, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
+import { getCookie } from '@/libs/local.db'
+import { useCounterStore } from '@/stores/counter'
 
 import MenuList from './components/MenuList.vue'
 import HeaderMain from './components/HeaderMain.vue'
+
+const router = useRouter();
 
 const defaultHeight = ref({     
   height: "500px"
@@ -44,6 +48,15 @@ function getHeight() {
   defaultHeight.value.height = window.innerHeight + "px";  
 }
 
+//加载登录状态
+const userInfo = getCookie("userInfo");
+if (userInfo == null || Object.keys(userInfo).length == 0) {
+  //未登录
+  router.push("login");
+} else {
+  const store = useCounterStore();
+  store.setUser(userInfo);
+}
 </script>
 
 <style scoped>

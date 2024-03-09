@@ -1,5 +1,5 @@
-import VueCookies from 'vue-cookies'
-import { getData, setData } from '@/libs/local.db'
+import Cookies from "js-cookie";
+import { getData, setData, setCookie, getCookie } from '@/libs/local.db'
 
 const tokenKey = import.meta.env.VITE_TOKEN_KEY;
 const xsrfTokenKey = import.meta.env.VITE_XSRF_TOKEN_KEY;
@@ -9,7 +9,7 @@ export const getToken = ({
   //是否尝试从localStorage中获取
   localDb = false,
 }) => {
-  let token = VueCookies.get(tokenKey);
+  let token = getCookie(tokenKey);
   if (token == '' || token == null || token == 'undefined') {
     if (localDb == true) {
       token = getData(tokenKey);
@@ -33,17 +33,19 @@ export const setToken = ({
   localDb = false,
 }) => {
   if (token == '') {
-    throw Error("token不能为空！");
+    ElMessage.error("token不能为空！");
+    return false;
   }
-  VueCookies.set(tokenKey, token);
+  setCookie(tokenKey, token);
   if (localDb == true) {
     setData(tokenKey, token);
   }
+  return true;
 }
 
 //获取浏览器缓存的XSRF-TOKEN
 export const getXsrfToken = () => {
-  let token = VueCookies.get(xsrfTokenKey);
+  let token = Cookies.get(xsrfTokenKey);
   if (token == '' || token == null || token == 'undefined') {
     return '';
   } else {

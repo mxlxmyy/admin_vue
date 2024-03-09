@@ -10,31 +10,28 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <span>{{ userInfo.name }}</span>
+      <span>{{ store.user.name }}</span>
     </div>
 </template>
 
 <script setup>
-import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
+import { Setting } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 import loginApi from '@/api/login/login'
+import { useCounterStore } from '@/stores/counter'
+import { rmCookie } from '@/libs/local.db'
 
-import { getData, setData } from '@/libs/local.db'
+const store = useCounterStore();
 
-import { useRouter } from 'vue-router';
 const router = useRouter();
-
-const userInfo = getData("userInfo");
-if (Object.keys(userInfo).length == 0) {
-  //未登录
-  router.push("login");
-}
 
 //退出登录
 function loginOut()
 {
   loginApi.out()
   .then(res => {
-    setData("userInfo", {})
+    rmCookie("userInfo")
+    store.setUser({});
     //跳转
     router.push("login");
   })
