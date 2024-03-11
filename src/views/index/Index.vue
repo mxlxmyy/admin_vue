@@ -1,13 +1,13 @@
 <template>
   <el-container class="layout-container-demo" :style="defaultHeight">
     
-    <el-aside width="245px">
+    <el-aside :width="store.mobileWidth.width">
       <MenuList/>
     </el-aside>
 
     <el-container>
 
-      <el-header style="text-align: right; font-size: 12px">
+      <el-header style="text-align: right; font-size: 12px; height: 50px;">
         <HeaderMain/>
       </el-header>
 
@@ -32,8 +32,11 @@ import { useCounterStore } from '@/stores/counter'
 import MenuList from './components/MenuList.vue'
 import HeaderMain from './components/HeaderMain.vue'
 
+const store = useCounterStore();
+
 const router = useRouter();
 
+//内容高度
 const defaultHeight = ref({     
   height: "500px"
 })
@@ -41,20 +44,30 @@ const defaultHeight = ref({
 onMounted(() => {
   window.addEventListener("resize", getHeight);  
 	getHeight();
+  vaPageWidth();
 })
 
 //获取页面高度
-function getHeight() {    
-  defaultHeight.value.height = window.innerHeight + "px";  
+function getHeight() {
+  defaultHeight.value.height = window.innerHeight + "px";
+}
+
+//判断页面宽度
+function vaPageWidth() {
+  if (window.innerWidth < 600) {
+    store.mobileWidth.show = true;
+    store.mobileWidth.width = "64px";
+  }
 }
 
 //加载登录状态
 const userInfo = getCookie("userInfo");
 if (userInfo == null || Object.keys(userInfo).length == 0) {
   //未登录
-  router.push("login");
+  router.push({
+    name: 'login'
+  });
 } else {
-  const store = useCounterStore();
   store.setUser(userInfo);
 }
 </script>

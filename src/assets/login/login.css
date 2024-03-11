@@ -13,7 +13,7 @@
   border-radius: 5px;
   box-shadow: var(--el-box-shadow);
 
-  .button_box .el-form-item__content {
+  .button_box ::v-deep .el-form-item__content {
     align-items: center;
     justify-content: center;
   }

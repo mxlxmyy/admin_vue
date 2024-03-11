@@ -7,6 +7,10 @@ export const useCounterStore = defineStore('counter', () => {
     id: '',
     name: ''
   })
+  const mobileWidth = ref({
+    show: false,
+    width: "235px"
+  })
   const conf = ref(setting)
   //计算属性
   // const doubleCount = computed(() => count.value * 2)
@@ -23,5 +27,5 @@ export const useCounterStore = defineStore('counter', () => {
     }
   }
 
-  return { user, conf, setUser }
+  return { user, conf, mobileWidth, setUser }
 })

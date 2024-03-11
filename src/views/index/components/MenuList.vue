@@ -1,55 +1,50 @@
 <template>
     <el-scrollbar>
-      <el-menu :default-openeds="['1', '3']">
+      <el-menu :default-openeds="['1', '2']" :collapse="store.mobileWidth.show">
+        <el-menu-item index="0" @click="goPage('/')">
+          <el-icon><House /></el-icon>
+          <template #title>主页</template>
+        </el-menu-item>
         <el-sub-menu index="1">
           <template #title>
-            <el-icon><message /></el-icon>Navigator One
+            <el-icon><Goods /></el-icon>
+            <span>商品中心</span>
           </template>
-          <el-menu-item-group>
-            <template #title>Group 1</template>
-            <el-menu-item index="1-1">Option 1</el-menu-item>
-            <el-menu-item index="1-2">Option 2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="Group 2">
-            <el-menu-item index="1-3">Option 3</el-menu-item>
-          </el-menu-item-group>
-          <el-sub-menu index="1-4">
-            <template #title>Option4</template>
-            <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
-          </el-sub-menu>
+          <el-menu-item index="1-1" @click="goPage('/goods/list')">商品管理</el-menu-item>
+          <el-menu-item index="1-2" @click="goPage('/category/list')">分类管理</el-menu-item>
+          <el-menu-item index="1-3" @click="showWait">品牌管理</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="2">
           <template #title>
-            <el-icon><icon-menu /></el-icon>Navigator Two
+            <el-icon><Position /></el-icon>
+            <span>服务</span>
           </template>
-          <el-menu-item-group>
-            <template #title>Group 1</template>
-            <el-menu-item index="2-1">Option 1</el-menu-item>
-            <el-menu-item index="2-2">Option 2</el-menu-item>
+          <el-menu-item-group title="供应商">
+            <el-menu-item index="2-1" @click="goPage('/supplier/list')">供应商信息管理</el-menu-item>
           </el-menu-item-group>
-          <el-menu-item-group title="Group 2">
-            <el-menu-item index="2-3">Option 3</el-menu-item>
+          <el-menu-item-group title="渠道">
+            <el-menu-item index="2-3" @click="showWait">渠道信息管理</el-menu-item>
           </el-menu-item-group>
-          <el-sub-menu index="2-4">
-            <template #title>Option 4</template>
-            <el-menu-item index="2-4-1">Option 4-1</el-menu-item>
-          </el-sub-menu>
         </el-sub-menu>
         <el-sub-menu index="3">
           <template #title>
-            <el-icon><setting /></el-icon>Navigator Three
+            <el-icon><Key /></el-icon>
+            <span>交易</span>
           </template>
-          <el-menu-item-group>
-            <template #title>Group 1</template>
-            <el-menu-item index="3-1">Option 1</el-menu-item>
-            <el-menu-item index="3-2">Option 2</el-menu-item>
+          <el-menu-item-group title="订单">
+            <el-menu-item index="3-1" @click="showWait">订单中心</el-menu-item>
           </el-menu-item-group>
-          <el-menu-item-group title="Group 2">
-            <el-menu-item index="3-3">Option 3</el-menu-item>
-          </el-menu-item-group>
-          <el-sub-menu index="3-4">
-            <template #title>Option 4</template>
-            <el-menu-item index="3-4-1"><RouterLink to="/login">About</RouterLink></el-menu-item>
+        </el-sub-menu>
+        <el-sub-menu index="4">
+          <template #title>
+            <el-icon><setting /></el-icon>
+            <span>系统管理</span>
+          </template>
+          <el-menu-item index="4-1" @click="goPage('/region/list')">地区管理</el-menu-item>
+          <el-menu-item index="4-2" @click="showWait">网站配置</el-menu-item>
+          <el-sub-menu index="4-3">
+            <template #title>管理员及权限</template>
+            <el-menu-item index="4-3-1" @click="goPage('/user/list')">管理员</el-menu-item>
           </el-sub-menu>
         </el-sub-menu>
       </el-menu>
@@ -57,7 +52,26 @@
 </template>
 
 <script setup>
-  import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
+import { Position, Goods, Setting, House, Key } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus';
+import { useRouter } from 'vue-router';
+import { useCounterStore } from '@/stores/counter'
+
+const store = useCounterStore();
+
+const router = useRouter();
+
+const goPage = pname => {
+  router.push(pname)
+}
+
+const showWait = () => {
+  ElMessage({
+    "type": "success",
+    "message": "敬请期待！"
+  })
+}
+
 </script>
 
 <style scoped>

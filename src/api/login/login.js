@@ -1,5 +1,6 @@
 import { getUrl, postUrl, loadCsrf } from '../index'
 import { failPromise } from '@/libs/error'
+import { setCookie } from '@/libs/local.db'
 
 //请求地址前缀
 const urlPath = "/api/login/";
@@ -26,7 +27,14 @@ const login = {
     .then(res => {
       if (res.code == 1) {
         //登录成功
-        return login.userId();
+        return login.userId()
+        .then(res => {
+          if (res.code == 1) {
+            setCookie('userInfo', res.posts);
+          } else {
+            return failPromise(res.msg);
+          }
+        });
       } else {
         return failPromise(res.msg);
       }

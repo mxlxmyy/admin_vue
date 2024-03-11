@@ -24,8 +24,6 @@
 import loginApi from '@/api/login/login'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
-import '@/assets/login/login.css'
-import { setCookie } from '@/libs/local.db'
 
 const title = import.meta.env.VITE_APP_NAME;
 
@@ -46,8 +44,7 @@ loginApi.csrf().catch(err => {
 function onSubmit()
 {
   loginApi.init(form.value)
-  .then(res => {
-    setCookie('userInfo', res);
+  .then(() => {
     //跳转
     router.replace('/');
   })
@@ -57,3 +54,7 @@ function onSubmit()
 }
 
 </script>
+
+<style scoped>
+@import '@/assets/login/login.css';
+</style>
