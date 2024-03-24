@@ -120,6 +120,7 @@ function searchSub() {
   region.bclist(map)
   .then(res => {
     if (res.code == 1) {
+      hasChooseIds.value = {};
       for (let index = 0; index < res.posts.list.length; index++) {
         const element = res.posts.list[index];
         if (hasChooseList.value[element.id]) {
@@ -188,22 +189,19 @@ function rmChooseOption(id) {
 
 onMounted(() => {
   //加载列表数据
-  searchSub();
+  // searchSub();
 })
 
 //观察已选择的地区信息变更
 watch(props, () => {
-  // console.log(props.selectOptions)
-  if (props.selectOptions.length == 0) {
-    hasChooseList.value = {};
-    hasChooseIds.value = {};
-    //加载列表数据
-    searchSub();
-  } else {
+  hasChooseList.value = {};
+  if (props.selectOptions.length > 0) {
     props.selectOptions.forEach(e => {
       hasChooseList.value[e.id] = e;
     })
   }
+  //加载列表数据
+  searchSub();
 })
 
 </script>

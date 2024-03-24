@@ -86,7 +86,7 @@
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="showBox = false">取消</el-button>
+        <el-button @click="cancelEdit">取消</el-button>
         <el-button v-if="activeStep == 2" type="primary" @click="saveData">保存并完成</el-button>
         <el-button v-else type="primary" @click="saveData">保存并下一步></el-button>
       </div>
@@ -169,14 +169,13 @@ function getEditPreData()
     goods.addpre()
     .then(res => {
       if (res.code == 1) {
+        hasRegionIds.value = [];
+        
+        hasShowImg.value = ""
+        hasShowImgMul.value = [];
+
         cateTypeId.value = res.posts.cate_type_id
         taxRate.value = res.posts.tax_rate
-
-        //获取分类数据
-        if (categoryDataStatus.value == false) {
-          categoryDataStatus.value = true;
-          getCategoryList();
-        }
       } else {
         ElMessage.error(res.msg);
       }
@@ -204,19 +203,10 @@ function getEditPreData()
         hasRegionIds.value = res.posts.no_region_list;
 
         hasShowImg.value = formDataShow.value.image;
-        hasShowImgMul.value = [];
-        res.posts.show_data.image_list_edit.forEach(item => {
-          hasShowImgMul.value.push(item);
-        })
+        hasShowImgMul.value = res.posts.show_data.image_list_edit;
 
         cateTypeId.value = res.posts.attr_data.cate_type_id
         taxRate.value = res.posts.attr_data.tax_rate
-
-        //获取分类数据
-        if (categoryDataStatus.value == false) {
-          categoryDataStatus.value = true;
-          getCategoryList();
-        }
       } else {
         ElMessage.error(res.msg);
       }
@@ -273,6 +263,12 @@ function saveData() {
   .finally(() => {
     doLoading.value = false;
   })
+}
+
+//取消按钮
+function cancelEdit() {
+  showBox.value = false;
+  emit('saveEditSub');
 }
 
 //步骤显示
@@ -380,9 +376,7 @@ watch(props, () => {
   }
   categoryOnName.value = [];
   supplierOnName.value = "";
-  hasRegionIds.value = [];
   activeStep.value = 0;
-  hasShowImg.value = ""
 
   if (formData.value.id != props.preData.id || props.preData.id == 0) {
     getEditPreData();
@@ -390,7 +384,7 @@ watch(props, () => {
 })
 //观察分类类型ID变更
 watch(cateTypeId, (n, o) => {
-  if (o == 0) {
+  if (n == 0) {
     return;
   }
   //变更时重新获取
