@@ -36,6 +36,8 @@ const formData = ref({
   description: '',
   list_order: 100,
 })
+//初始表单数据
+const formDataRe = {}
 
 //加载中
 const doLoading = ref(false);
@@ -43,6 +45,13 @@ const doLoading = ref(false);
 //点击监听
 const dialogFormVisible = ref(0);
 const showBox = ref(false);
+
+//初始化表单数据
+function reFormData() {
+  for (const key in formData.value) {
+    formDataRe[key] = formData.value[key]
+  }
+}
 
 //获取编辑前置数据
 function getEditPreData()
@@ -52,10 +61,9 @@ function getEditPreData()
     //新增
     supplier.addpre()
     .then(res => {
-      formData.value.id = 0;
-      formData.value.list_order = 100;
-      formData.value.description = '';
-      formData.value.name = '';
+      for (const key in formData.value) {
+        formData.value[key] = formDataRe[key]
+      }
     })
     .catch(() => {
       ElMessage.error("网络错误！");
@@ -67,10 +75,9 @@ function getEditPreData()
     //编辑
     supplier.editpre({id: props.preData.id})
     .then(res => {
-      formData.value.id = res.posts.id;
-      formData.value.list_order = res.posts.list_order;
-      formData.value.description = res.posts.description;
-      formData.value.name = res.posts.name;
+      for (const key in formData.value) {
+        formData.value[key] = res.posts[key]
+      }
     })
     .catch(() => {
       ElMessage.error("网络错误！");
@@ -110,6 +117,8 @@ function saveData() {
 onMounted(() => {
   //初始化监听点击
   dialogFormVisible.value = props.editFormVisible;
+
+  reFormData();
 })
 
 watch(props, () => {
