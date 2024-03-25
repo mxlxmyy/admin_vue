@@ -1,23 +1,7 @@
 <template>
-  <el-popover :visible="showOptions" placement="bottom" :width="360">
+  <el-popover :visible="showOptions" placement="top" :width="360">
     <template #reference>
-      <el-form-item label="选择地区">
-        <div class="select_box" ref="selectregionRef" :style="inputStyle" @click="showOptionsBut">
-          <div class="select_input" v-bind:class="{ is_focused: isFocusOn }">
-            <div class="select_has">
-              <div class="select_one" v-for="rg in hasChooseList">
-                <span class="select_one_con">
-                  <span class="select_one_text"><span class="select_one_textin">{{ rg.name }}</span></span>
-                  <el-icon class="select_one_close" @click.stop="rmChooseOption(rg.id)"><Close /></el-icon>
-                </span>
-              </div>
-            </div>
-            <div class="select_but">
-              <el-icon v-bind:class="{ is_reverse: showOptions }"><ArrowDown /></el-icon>
-            </div>
-          </div>
-        </div>
-      </el-form-item>
+      <div class="show_position"></div>
     </template>
     <div class="select_options" v-click-outside="closeOptions" v-loading="doLoading">
       <el-table :data="tableData" :height="280">
@@ -41,6 +25,23 @@
       </div>
     </div>
   </el-popover>
+  <el-form-item label="选择地区">
+    <div class="select_box" ref="selectregionRef" :style="inputStyle" @click="showOptionsBut">
+      <div class="select_input" v-bind:class="{ is_focused: isFocusOn }">
+        <div class="select_has">
+          <div class="select_one" v-for="rg in hasChooseList">
+            <span class="select_one_con">
+              <span class="select_one_text"><span class="select_one_textin">{{ rg.name }}</span></span>
+              <el-icon class="select_one_close" @click.stop="rmChooseOption(rg.id)"><Close /></el-icon>
+            </span>
+          </div>
+        </div>
+        <div class="select_but">
+          <el-icon v-bind:class="{ is_reverse: showOptions }"><ArrowDown /></el-icon>
+        </div>
+      </div>
+    </div>
+  </el-form-item>
 </template>
 <script setup>
 import { ref, onMounted, watch } from 'vue';
@@ -328,5 +329,9 @@ watch(props, () => {
 
 .breadcrumb_box {
   padding: 10px 5px 2px;
+}
+
+.show_position {
+  width: 100%;
 }
 </style>
