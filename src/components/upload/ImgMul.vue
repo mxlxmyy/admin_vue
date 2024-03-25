@@ -77,17 +77,11 @@ const handlePictureCardPreview = (uploadFile) => {
 }
 
 onMounted(() => {
-  fileList.value = props.selectShowImg
-  // props.selectShowImg.forEach(item => {
-  //   fileList.value.push(item)
-  // })
+  fileList.value = props.selectShowImg.slice()
 })
 
 //观察显示当前图片
 watch(props, () => {
-  fileList.value = props.selectShowImg
-  // props.selectShowImg.forEach(item => {
-  //   fileList.value.push(item)
-  // })
+  fileList.value = props.selectShowImg.slice()
 })
 </script>

@@ -398,7 +398,7 @@ watch(cateTypeId, (n, o) => {
   max-width: 600px;
   margin-bottom: 15px;
 }
-.step_list ::v-deep .el-step__title {
+.step_list ::v-deep( .el-step__title) {
   font-size: 12px;
 }
 
