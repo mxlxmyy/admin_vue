@@ -48,12 +48,16 @@ const handleAvatarSuccess = (
   if (res.code == 1) {
     const imgList = [];
     fileList.value.forEach(e => {
-      imgList.push(e.response.posts.file_url);
+      if (e.response) {
+        imgList.push(e.response.posts.file_url);
+      } else {
+        imgList.push(e.url);
+      }
     });
     // console.log(imgList);
     emit('saveUploadImg', imgList);
     // console.log(res);
-    console.log(fileList.value);
+    // console.log(fileList.value);
   } else {
     ElMessage.error(res.msg)
   }
@@ -77,11 +81,21 @@ const handlePictureCardPreview = (uploadFile) => {
 }
 
 onMounted(() => {
-  fileList.value = props.selectShowImg.slice()
+  if (props.selectShowImg) {
+    fileList.value = props.selectShowImg.slice()
+  } else {
+    fileList.value =[];
+  }
 })
 
 //观察显示当前图片
 watch(props, () => {
-  fileList.value = props.selectShowImg.slice()
+  if (props.selectShowImg) {
+    if (JSON.stringify(fileList.value) !== JSON.stringify(props.selectShowImg.slice())) {
+      fileList.value = props.selectShowImg.slice()
+    }
+  } else {
+    fileList.value =[];
+  }
 })
 </script>

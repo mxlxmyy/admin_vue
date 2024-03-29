@@ -18,13 +18,18 @@
           </el-row>
         </el-form>
         <div class="mb-4">
-          <el-button type="primary" @click="showEditBox(0)">新增</el-button>
+          <el-button type="primary" @click="showEditBox(0, false)">新增</el-button>
+          <el-button type="primary" @click="showImportBox">导入</el-button>
         </div>
       </el-header>
       <el-main class="mainlist">
         <el-table :data="tableData" style="width: 100%">
           <el-table-column prop="id" label="ID" width="100" />
-          <el-table-column prop="title" label="商品名称" />
+          <el-table-column label="商品名称">
+            <template #default="scope">
+              <el-link @click="showEditBox(scope.row.id, true)">{{ scope.row.title }}</el-link>
+            </template>
+          </el-table-column>
           <el-table-column label="状态" width="80">
             <template #default="scope">
               <el-button v-if="scope.row.status==1" size="small" type="success" >启用</el-button>
@@ -33,7 +38,7 @@
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="160">
             <template #default="scope">
-              <el-button size="small" @click="showEditBox(scope.row.id)" >编辑</el-button>
+              <el-button size="small" @click="showEditBox(scope.row.id, false)" >编辑</el-button>
               <el-popconfirm title="确定要删除吗？" confirm-button-text="确认" cancel-button-text="取消" @confirm="delListItem(scope.row.id)">
                 <template #reference>
                   <el-button size="small" type="danger">删除</el-button>
@@ -48,6 +53,8 @@
 
     <!-- 新增与编辑 -->
     <Edit :editFormVisible="dialogShow" :preData="setPreData" @saveEditSub="reloadList" />
+    <!-- 导入 -->
+    <Import :editFormVisible="dialogShowImport" @saveEditSub="reloadList" />
   </main>
 </template>
 
@@ -56,6 +63,7 @@ import { ref, onMounted } from 'vue';
 import goods from '@/api/goods/goods'
 import { ElMessage } from 'element-plus';
 import Edit from './components/Edit.vue';
+import Import from './components/Import.vue';
 
 //加载状态
 const doLoading = ref(false);
@@ -82,7 +90,11 @@ const setPreData = ref({
   //显示标题 新增 编辑
   ttType: '',
   id: 0,
+  detail: 0,
 });
+
+//导入框是否显示
+const dialogShowImport = ref(0);
 
 //重置查询
 function reSearchMap()
@@ -154,15 +166,26 @@ function handleCurrentChange(page) {
 }
 
 //显示编辑框
-function showEditBox(dataId) {
+function showEditBox(dataId, detail) {
   setPreData.value.id = dataId;
+  setPreData.value.detail = 0;
   if (dataId == 0) {
     setPreData.value.ttType = '新增';
   } else {
-    setPreData.value.ttType = '编辑';
+    if (detail) {
+      setPreData.value.ttType = '详情';
+      setPreData.value.detail = 1;
+    } else {
+      setPreData.value.ttType = '编辑';
+    }
   }
 
   dialogShow.value++;
+}
+
+//显示导入框
+function showImportBox () {
+  dialogShowImport.value++;
 }
 
 onMounted(() => {

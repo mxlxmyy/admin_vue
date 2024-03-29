@@ -1,13 +1,13 @@
 <template>
   <el-container class="layout-container-demo" :style="defaultHeight">
     
-    <el-aside :width="store.mobileWidth.width">
+    <el-aside :width="store.mobileWidth.width" style="box-shadow: #b3b3b3 0px 0px 15px -5px;">
       <MenuList/>
     </el-aside>
 
     <el-container>
 
-      <el-header style="text-align: right; font-size: 12px; height: 50px;">
+      <el-header style="text-align: right; font-size: 12px; height: 50px; box-shadow: #d4d4d4 15px -5px 15px 5px;">
         <HeaderMain/>
       </el-header>
 

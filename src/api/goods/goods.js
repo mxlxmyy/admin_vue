@@ -28,6 +28,10 @@ const goods = {
   del: (params) => {
     return deleteUrl(urlPath + "del", params);
   },
+  //导入
+  import: (params) => {
+    return postUrl(urlPath + "import", params);
+  },
 }
 
 export default goods

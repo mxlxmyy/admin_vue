@@ -6,48 +6,43 @@
     <div class="select_options" v-click-outside="closeOptions" v-loading="doLoading">
       <el-table :data="tableData" :height="280">
         <el-table-column width="100" property="id" label="编号" />
-        <el-table-column label="地区名">
-            <template #default="scope">
-              <el-link @click="searchSubUd(scope.row.id)">{{ scope.row.name }}</el-link>
-            </template>
-          </el-table-column>
+        <el-table-column label="名称">
+          <template #default="scope">
+            <el-link>{{ scope.row.name }}</el-link>
+          </template>
+        </el-table-column>
         <el-table-column width="80" label="操作">
           <template #default="scope">
             <el-checkbox :value="JSON.stringify(scope.row)" @change="checkOneDo" v-model="hasChooseIds[scope.row.id]"/>
           </template>
         </el-table-column>
       </el-table>
-      <div class="breadcrumb_box">
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item @click="searchSubUp(0)"><span style="cursor: pointer;">当前：最顶级</span></el-breadcrumb-item>
-          <el-breadcrumb-item v-for="bc in breadcrumbData" @click="searchSubUp(bc.id)"><span style="cursor: pointer;">{{ bc.name }}</span></el-breadcrumb-item>
-        </el-breadcrumb>
+      <div class="page_box">
+        <el-pagination background small layout="next, pager, prev" :total="pagination._count" :page-size="pagination._pagesize" :current-page="pagination._page" @current-change="handleCurrentChange" class="page_num_box" />
       </div>
     </div>
   </el-popover>
-  <el-form-item label="选择地区">
-    <div class="select_box" ref="selectregionRef" :style="inputStyle" @click="showOptionsBut">
-      <div class="select_input" v-bind:class="{ is_focused: isFocusOn }">
-        <div class="select_has">
-          <div class="select_one" v-for="rg in hasChooseList">
-            <span class="select_one_con">
-              <span class="select_one_text"><span class="select_one_textin">{{ rg.name }}</span></span>
-              <el-icon class="select_one_close" @click.stop="rmChooseOption(rg.id)"><Close /></el-icon>
-            </span>
-          </div>
-        </div>
-        <div class="select_but">
-          <el-icon v-bind:class="{ is_reverse: showOptions }"><ArrowDown /></el-icon>
+  <div class="select_box" ref="selectregionRef" :style="inputStyle" @click="showOptionsBut">
+    <div class="select_input" v-bind:class="{ is_focused: isFocusOn }">
+      <div class="select_has">
+        <div class="select_one" v-for="rg in hasChooseList">
+          <span class="select_one_con">
+            <span class="select_one_text"><span class="select_one_textin">{{ rg.name }}</span></span>
+            <el-icon class="select_one_close" @click.stop="rmChooseOption(rg.id)"><Close /></el-icon>
+          </span>
         </div>
       </div>
+      <div class="select_but">
+        <el-icon v-bind:class="{ is_reverse: showOptions }"><ArrowDown /></el-icon>
+      </div>
     </div>
-  </el-form-item>
+  </div>
 </template>
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { ArrowDown, Close } from '@element-plus/icons-vue'
 import { ClickOutside, ElMessage } from 'element-plus'
-import region from '@/api/system/region'
+import upfile from '@/api/data/upfile'
 
 //是否已展开选择
 const showOptions = ref(false);
@@ -55,22 +50,20 @@ const showOptions = ref(false);
 const isFocusOn = ref(false);
 //查询条件
 const searchMap = ref({
-  //父级ID
-  pid: 0,
+  //文件类型
+  mime: "zip",
 });
 //页码显示
 const pagination = ref({
   _count: 0,
   _page: 1,
-  _pagesize: 1000,
+  _pagesize: 10,
 })
 //列表数据
 const tableData = ref([])
-//面包屑数据
-const breadcrumbData = ref([])
 
 //接收传参
-const props = defineProps(['inputStyle', 'selectOptions']);
+const props = defineProps(['inputStyle', 'maxChooseOption', 'selectOptions', 'searchMapSet']);
 //回调父级
 const emit = defineEmits(['saveChooseIds'])
 
@@ -80,9 +73,9 @@ const selectregionRef = ref();
 const vClickOutside = ClickOutside
 //加载状态
 const doLoading = ref(false);
-//已选择的地区
+//已选择的选项
 const hasChooseList = ref([]);
-//标记选择的地区ID
+//标记选择的ID
 const hasChooseIds = ref({});
 
 //关闭选项框
@@ -117,44 +110,38 @@ function searchSub() {
   const map = searchMap.value;
   map.page = pagination.value._page;
   map.pagesize = pagination.value._pagesize;
-  region.bclist(map)
-  .then(res => {
-    if (res.code == 1) {
-      hasChooseIds.value = {};
-      if (res.posts.list.length > 0) {
-        res.posts.list.forEach(item => {
-          if (hasChooseList.value.some(item2 => item.id == item2.id)) {
-            hasChooseIds.value[item.id] = true;
-          } else {
-            hasChooseIds.value[item.id] = false;
+  upfile.flist(map)
+      .then(res => {
+        if (res.code === 1) {
+          hasChooseIds.value = {};
+          if (res.posts.list.length > 0) {
+            res.posts.list.forEach(item => {
+              if (hasChooseList.value.some(item2 => item.id === item2.id)) {
+                hasChooseIds.value[item.id] = true;
+              } else {
+                hasChooseIds.value[item.id] = false;
+              }
+            })
           }
-        })
-      }
 
-      tableData.value = res.posts.list;
-      breadcrumbData.value = res.posts.bclist;
-      pagination.value._count = res.posts.count;
-    } else {
-      ElMessage.error(res.msg);
-    }
-  })
-  .catch(err => {
-    ElMessage.error("网络错误！");
-  })
-  .finally(() => {
-    doLoading.value = false;
-  })
+          tableData.value = res.posts.list;
+          pagination.value._count = res.posts.count;
+        } else {
+          ElMessage.error(res.msg);
+        }
+      })
+      .catch(err => {
+        ElMessage.error("网络错误！");
+      })
+      .finally(() => {
+        doLoading.value = false;
+      })
 }
 
-//返回上级
-function searchSubUp(pid) {
-  searchMap.value.pid = pid;
-  searchSub();
-}
+//分页加载
+function handleCurrentChange(page) {
+  pagination.value._page = page;
 
-//查看子级
-function searchSubUd(pid) {
-  searchMap.value.pid = pid;
   searchSub();
 }
 
@@ -162,6 +149,12 @@ function searchSubUd(pid) {
 function checkOneDo(e, r) {
   const rg = JSON.parse(r.target.value);
   if (e) {
+    if (hasChooseList.value.length >= props.maxChooseOption) {
+      ElMessage.error("最多只能选择" + props.maxChooseOption + "个！");
+      hasChooseIds.value[rg.id] = false;
+      return;
+    }
+
     hasChooseList.value.push({
       id: rg.id,
       name: rg.name
@@ -174,7 +167,7 @@ function checkOneDo(e, r) {
   }
 
   //返回给上级组件所选地区id
-  emit('saveChooseIds', hasChooseList.value.map(obj => obj.id));
+  emit('saveChooseIds', hasChooseList.value);
 }
 
 //点击删除
@@ -185,24 +178,29 @@ function rmChooseOption(rgid) {
     hasChooseIds.value[rgid] = false;
 
     //返回给上级组件所选地区id
-    emit('saveChooseIds', hasChooseList.value.map(obj => obj.id));
+    emit('saveChooseIds', hasChooseList.value);
   }
 }
 
 onMounted(() => {
+  for (const key in searchMap.value) {
+    if (props.searchMapSet[key]) {
+      searchMap.value[key] = props.searchMapSet[key]
+    }
+  }
   //加载列表数据
-  // searchSub();
+  searchSub();
 })
 
 //观察已选择的地区信息变更
 watch(props, () => {
-    hasChooseList.value.length = 0;
-    props.selectOptions.forEach(e => {
-      hasChooseList.value.push({
-        id: e.id,
-        name: e.name
-      })
-    });
+  hasChooseList.value.length = 0;
+  props.selectOptions.forEach(e => {
+    hasChooseList.value.push({
+      id: e.id,
+      name: e.name
+    })
+  });
 
   //加载列表数据
   searchSub();
@@ -327,7 +325,7 @@ watch(props, () => {
   box-shadow: 0 0 0 1px var(--el-color-primary) inset;
 }
 
-.breadcrumb_box {
+.page_box {
   padding: 10px 5px 2px;
 }
 

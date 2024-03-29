@@ -65,6 +65,7 @@
           <ImgMul @saveUploadImg="setUploadImgMul" :selectShowImg="hasShowImgMul" />
         </el-form-item>
         <el-form-item label="商品详情">
+          <WangEditor @saveEditContent="setEditHtml" :editHtmlContent="hasShowContent" />
         </el-form-item>
       </div>
       <div v-else-if="activeStep == 2">
@@ -86,9 +87,9 @@
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="cancelEdit">取消</el-button>
-        <el-button v-if="activeStep == 2" type="primary" @click="saveData">保存并完成</el-button>
-        <el-button v-else type="primary" @click="saveData">保存并下一步></el-button>
+        <el-button v-if="preData.detail == 0" @click="cancelEdit">取消</el-button>
+        <el-button v-if="activeStep == 2" type="primary" @click="saveData"><span v-if="preData.detail == 0">保存并完成</span><span v-if="preData.detail == 1">关闭</span></el-button>
+        <el-button v-else type="primary" @click="saveData"><span v-if="preData.detail == 0">保存并下一步></span><span v-if="preData.detail == 1">更多></span></el-button>
       </div>
     </template>
   </el-dialog>
@@ -103,7 +104,7 @@ import { ElMessage } from 'element-plus';
 import SelectRegion from '@/components/find/SelectRegion.vue'
 import ImgOne from '@/components/upload/ImgOne.vue'
 import ImgMul from '@/components/upload/ImgMul.vue'
-
+import WangEditor from '@/components/editor/WangEditor.vue'
 
 //弹框显示状态
 const props = defineProps(['editFormVisible', 'preData']);
@@ -204,6 +205,11 @@ function getEditPreData()
 
         hasShowImg.value = formDataShow.value.image;
         hasShowImgMul.value = res.posts.show_data.image_list_edit;
+        if (res.posts.show_data.content) {
+          hasShowContent.value = res.posts.show_data.content
+        } else {
+          hasShowContent.value = ""
+        }
 
         cateTypeId.value = res.posts.attr_data.cate_type_id
         taxRate.value = res.posts.attr_data.tax_rate
@@ -222,6 +228,16 @@ function getEditPreData()
 
 //提交编辑数据
 function saveData() {
+  //这里判断是否为查看详情
+  if (props.preData.detail == 1) {
+    if (activeStep.value == 2) {
+      showBox.value = false;
+    } else {
+      activeStep.value ++;
+    }
+    return;
+  }
+
   doLoading.value = true;
 
   let postData = {};
@@ -314,8 +330,6 @@ function handleSelectSupplier(item) {
   formData.value.supplier_id = item.id;
 }
 
-//是否已加载分类数据
-const categoryDataStatus = ref(false);
 //商品默认分类类型ID
 const cateTypeId = ref(0);
 //分类数据
@@ -351,6 +365,11 @@ function setUploadImg(e) {
 //展示图片上传
 function setUploadImgMul(e) {
   formDataShow.value.image_list = e;
+}
+
+//富文本内容
+function setEditHtml(e) {
+  formDataShow.value.content = e;
 }
 
 onMounted(() => {
