@@ -3,3 +3,10 @@ body {
     padding: 0;
     font-size: 12px;
 }
+.mainlist {
+  padding: 10px !important;
+}
+.page_num_box {
+    flex-direction: row-reverse;
+    margin-top: 5px;
+}
